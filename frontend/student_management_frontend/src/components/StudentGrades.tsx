@@ -24,7 +24,7 @@ export function StudentGrades() {
 
     const fetchGrades = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/grades/student/${studentId}/`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/students/${studentId}/grades`, {
                 headers: {
                     'Authorization': `Bearer ${getToken()}`
                 }
