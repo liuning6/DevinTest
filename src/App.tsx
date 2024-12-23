@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Play, Pause, RotateCcw } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { addScore } from "@/utils/storage";
+import { Trophy } from "lucide-react";
+import Leaderboard from "./components/Leaderboard";
 
 // Types
 type Position = {
@@ -24,6 +28,9 @@ function App() {
   const [isGameOver, setIsGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [score, setScore] = useState(0);
+  const [showNameDialog, setShowNameDialog] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Generate random food position
   const generateFood = useCallback(() => {
@@ -79,6 +86,7 @@ function App() {
 
     if (checkCollision(head)) {
       setIsGameOver(true);
+      setShowNameDialog(true);
       return;
     }
 
@@ -152,6 +160,9 @@ function App() {
         <Button onClick={resetGame} variant="outline">
           <RotateCcw className="w-4 h-4" />
         </Button>
+        <Button onClick={() => setShowLeaderboard(true)} variant="outline">
+          <Trophy className="w-4 h-4" />
+        </Button>
         <div className="text-lg font-semibold">Score: {score}</div>
       </div>
 
@@ -200,6 +211,45 @@ function App() {
       <div className="mt-4 text-sm text-gray-600">
         Use arrow keys to move, space to pause
       </div>
+
+      <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Game Over!</DialogTitle>
+            <DialogDescription>
+              Your score: {score}. Enter your name for the leaderboard:
+            </DialogDescription>
+          </DialogHeader>
+          <input
+            type="text"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
+            placeholder="Enter your name"
+          />
+          <DialogFooter>
+            <Button onClick={() => {
+              addScore(playerName || "Anonymous", score);
+              setShowNameDialog(false);
+              setPlayerName("");
+            }}>
+              Save Score
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showLeaderboard} onOpenChange={setShowLeaderboard}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Leaderboard</DialogTitle>
+            <DialogDescription>
+              Top scores from all players
+            </DialogDescription>
+          </DialogHeader>
+          <Leaderboard />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
