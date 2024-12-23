@@ -15,7 +15,7 @@ const GRID_SIZE = 20;
 const CELL_SIZE = 20;
 const INITIAL_SNAKE = [{ x: 10, y: 10 }];
 const INITIAL_DIRECTION = 'RIGHT';
-const GAME_SPEED = 150;
+const GAME_SPEED = 300;
 
 function App() {
   const [snake, setSnake] = useState<Position[]>(INITIAL_SNAKE);
